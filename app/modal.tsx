@@ -1,16 +1,44 @@
-import { Link } from 'expo-router';
-import { StyleSheet } from 'react-native';
-
+import { StyleSheet, Pressable } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import useGoogleAuth from '../hooks/useGoogleAuth';
 
 export default function ModalScreen() {
+
+  const createSheet = async (token: string) => {
+    try {
+      const res = await fetch(
+        'https://sheets.googleapis.com/v4/spreadsheets',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            properties: {
+              title: 'My App Sheet',
+            },
+          }),
+        }
+      );
+
+      const data = await res.json();
+      console.log('Sheet created:', data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const { promptAsync } = useGoogleAuth(createSheet);
+
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="title">This is a modal</ThemedText>
-      <Link href="/" dismissTo style={styles.link}>
-        <ThemedText type="link">Go to home screen</ThemedText>
-      </Link>
+      <ThemedText type="title">Login with Google</ThemedText>
+
+      <Pressable onPress={() => promptAsync()}>
+        <ThemedText type="link">Sign in & Create Sheet</ThemedText>
+      </Pressable>
     </ThemedView>
   );
 }

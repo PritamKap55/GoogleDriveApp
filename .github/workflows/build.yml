@@ -30,4 +30,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-release.apk
+<<<<<<< HEAD
           path: android/app/build/outputs/apk/release/app-release.apk
+=======
+          path: android/app/build/outputs/apk/release/app-release.apk
+>>>>>>> 9a7a937 (update)
