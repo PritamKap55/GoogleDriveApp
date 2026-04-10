@@ -1,42 +1,42 @@
-import { StyleSheet, Pressable } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import useGoogleAuth from '../hooks/useGoogleAuth';
+import { Pressable, StyleSheet } from 'react-native';
+
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import React, { useState } from 'react';
+
+GoogleSignin.configure({
+  webClientId: '417059671592-8hpg94oqiohctu16phppadvgpcl7b2rj.apps.googleusercontent.com', // from Google Cloud Console
+  offlineAccess: true,
+});
 
 export default function ModalScreen() {
+  const [error, setError] = useState<string>();
+  const signIn = async () => {
+  try {
+    alert("1");
+    await GoogleSignin.hasPlayServices();
 
-  const createSheet = async (token: string) => {
-    try {
-      const res = await fetch(
-        'https://sheets.googleapis.com/v4/spreadsheets',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            properties: {
-              title: 'My App Sheet',
-            },
-          }),
-        }
-      );
+    const response = await GoogleSignin.signIn();
 
-      const data = await res.json();
-      console.log('Sheet created:', data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+    // ✅ Correct access
+    const user = response.data?.user;
+alert(user?.name)
 
-  const { promptAsync } = useGoogleAuth(createSheet);
+
+  } catch (error) {
+    alert(error)
+    console.log(error);
+  }
+};
+
+
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="title">Login with Google</ThemedText>
+      <ThemedText type="title">{error}</ThemedText>
 
-      <Pressable onPress={() => promptAsync()}>
+      <Pressable onPress={() => signIn()}>
         <ThemedText type="link">Sign in & Create Sheet</ThemedText>
       </Pressable>
     </ThemedView>
